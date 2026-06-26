@@ -15482,8 +15482,27 @@ local function main()
 			return todosJogadores
 		end
 		
-		-- Label "PlayerData" no topo (não clicável)
-		local labelPlayerData = Instance.new("TextLabel", scrollFrame)
+		-- Container para o header com ícone e label
+		local headerContainer = Instance.new("Frame", scrollFrame)
+		headerContainer.Name = "HeaderContainer"
+		headerContainer.BorderSizePixel = 0
+		headerContainer.BackgroundTransparency = 1
+		headerContainer.Size = UDim2.new(0, 228, 0, 16)
+		headerContainer.Position = UDim2.new(0, 0, 0, 0)
+		
+		-- Ícone expand/collapse (ImageLabel com ícone do Dex)
+		local iconToggle = Instance.new("ImageLabel", headerContainer)
+		iconToggle.Name = "IconToggle"
+		iconToggle.BorderSizePixel = 0
+		iconToggle.BackgroundTransparency = 1
+		iconToggle.Size = UDim2.new(0, 16, 0, 16)
+		iconToggle.Position = UDim2.new(0, 0, 0, 0)
+		iconToggle.Image = "rbxassetid://5034768003"  -- Ícone de chevron/expand do Dex
+		iconToggle.ImageColor3 = Color3.fromRGB(255, 255, 255)
+		
+		-- Label "PlayerData" ao lado do ícone
+		local labelPlayerData = Instance.new("TextLabel", headerContainer)
+		labelPlayerData.Name = "LabelPlayerData"
 		labelPlayerData.BorderSizePixel = 0
 		labelPlayerData.BackgroundTransparency = 1
 		labelPlayerData.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -15524,24 +15543,13 @@ local function main()
 		
 		-- Função para reconstruir a lista
 		local function reconstruirLista()
-			-- Limpar itens anteriores (não o label PlayerData)
+			-- Limpar itens anteriores (não o header)
 			local children = scrollFrame:GetChildren()
 			for i = #children, 1, -1 do
-				if children[i] ~= labelPlayerData then
+				if children[i] ~= headerContainer then
 					children[i]:Destroy()
 				end
 			end
-			
-			-- Recriar label PlayerData
-			labelPlayerData = Instance.new("TextLabel", scrollFrame)
-			labelPlayerData.BorderSizePixel = 0
-			labelPlayerData.BackgroundTransparency = 1
-			labelPlayerData.TextColor3 = Color3.fromRGB(255, 255, 255)
-			labelPlayerData.Size = UDim2.new(0, 174, 0, 14)
-			labelPlayerData.Position = UDim2.new(0, 18, 0, 2)
-			labelPlayerData.Text = "PlayerData"
-			labelPlayerData.TextSize = 9
-			labelPlayerData.TextXAlignment = Enum.TextXAlignment.Left
 			
 			local yOffset = 20
 			
