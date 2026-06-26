@@ -15468,10 +15468,6 @@ local function main()
 		
 		local selectedButton = nil
 		
-		-- Obter jogador local
-		local localPlayer = game:GetService("Players").LocalPlayer
-		local localPlayerName = localPlayer and localPlayer.Name or "Unknown"
-		
 		-- Obter lista de TODOS os jogadores (incluindo o local)
 		local function obterTodosJogadores()
 			local todosJogadores = {}
