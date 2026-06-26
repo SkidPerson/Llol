@@ -15467,42 +15467,31 @@ local function main()
 		scrollFrame.ScrollBarThickness = 8
 		
 		local selectedButton = nil
-		local botoesVisiveis = false
 		
 		-- Obter jogador local
 		local localPlayer = game:GetService("Players").LocalPlayer
 		local localPlayerName = localPlayer and localPlayer.Name or "Unknown"
 		
-		-- Obter lista de outros jogadores
-		local function obterOutrosJogadores()
-			local outrosJogadores = {}
+		-- Obter lista de TODOS os jogadores (incluindo o local)
+		local function obterTodosJogadores()
+			local todosJogadores = {}
 			for _, player in pairs(game:GetService("Players"):GetPlayers()) do
-				if player ~= localPlayer then
-					table.insert(outrosJogadores, player.Name)
-				end
+				table.insert(todosJogadores, player.Name)
 			end
-			return outrosJogadores
+			table.sort(todosJogadores)
+			return todosJogadores
 		end
 		
-		-- Botão toggle (v / >) - na posição original
-		local botaoToggle = Instance.new("TextButton", scrollFrame)
-		botaoToggle.BorderSizePixel = 0
-		botaoToggle.TextSize = 9
-		botaoToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-		botaoToggle.BackgroundTransparency = 1
-		botaoToggle.Size = UDim2.new(0, 16, 0, 16)
-		botaoToggle.Position = UDim2.new(0, 0, 0, 0)
-		botaoToggle.Text = ">"
-		
-		-- Label info do toggle
-		local labelToggle = Instance.new("TextLabel", botaoToggle)
-		labelToggle.BorderSizePixel = 0
-		labelToggle.BackgroundTransparency = 1
-		labelToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-		labelToggle.Size = UDim2.new(0, 174, 0, 14)
-		labelToggle.Position = UDim2.new(0, 18, 0, 2)
-		labelToggle.Text = "DataStore Editor"
-		labelToggle.TextSize = 9
+		-- Label "PlayerData" no topo (não clicável)
+		local labelPlayerData = Instance.new("TextLabel", scrollFrame)
+		labelPlayerData.BorderSizePixel = 0
+		labelPlayerData.BackgroundTransparency = 1
+		labelPlayerData.TextColor3 = Color3.fromRGB(255, 255, 255)
+		labelPlayerData.Size = UDim2.new(0, 174, 0, 14)
+		labelPlayerData.Position = UDim2.new(0, 18, 0, 2)
+		labelPlayerData.Text = "PlayerData"
+		labelPlayerData.TextSize = 9
+		labelPlayerData.TextXAlignment = Enum.TextXAlignment.Left
 		
 		-- Função para criar item de jogador (botão)
 		local function criarBotaoJogador(nome, yPos)
@@ -15535,38 +15524,39 @@ local function main()
 		
 		-- Função para reconstruir a lista
 		local function reconstruirLista()
-			-- Limpar itens anteriores (não o botão toggle)
+			-- Limpar itens anteriores (não o label PlayerData)
 			local children = scrollFrame:GetChildren()
 			for i = #children, 1, -1 do
-				if children[i] ~= botaoToggle then
+				if children[i] ~= labelPlayerData then
 					children[i]:Destroy()
 				end
 			end
 			
-			local yOffset = 0
+			-- Recriar label PlayerData
+			labelPlayerData = Instance.new("TextLabel", scrollFrame)
+			labelPlayerData.BorderSizePixel = 0
+			labelPlayerData.BackgroundTransparency = 1
+			labelPlayerData.TextColor3 = Color3.fromRGB(255, 255, 255)
+			labelPlayerData.Size = UDim2.new(0, 174, 0, 14)
+			labelPlayerData.Position = UDim2.new(0, 18, 0, 2)
+			labelPlayerData.Text = "PlayerData"
+			labelPlayerData.TextSize = 9
+			labelPlayerData.TextXAlignment = Enum.TextXAlignment.Left
 			
-			-- Criar botão do jogador local
-			if botoesVisiveis then
-				criarBotaoJogador(localPlayerName, yOffset)
+			local yOffset = 20
+			
+			-- Criar botões de TODOS os jogadores
+			local todosJogadores = obterTodosJogadores()
+			for _, playerName in ipairs(todosJogadores) do
+				criarBotaoJogador(playerName, yOffset)
 				yOffset = yOffset + 18
-				
-				-- Criar botões dos outros jogadores
-				local outrosJogadores = obterOutrosJogadores()
-				for _, playerName in ipairs(outrosJogadores) do
-					criarBotaoJogador(playerName, yOffset)
-					yOffset = yOffset + 18
-				end
 			end
 			
 			scrollFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 		end
 		
-		-- Conectar clique do botão toggle
-		botaoToggle.MouseButton1Click:Connect(function()
-			botoesVisiveis = not botoesVisiveis
-			botaoToggle.Text = botoesVisiveis and "v" or ">"
-			reconstruirLista()
-		end)
+		-- Construir lista inicial
+		reconstruirLista()
 		
 		-- Atualizar lista quando jogadores entrarem/saírem
 		game:GetService("Players").PlayerAdded:Connect(function()
